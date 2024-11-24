@@ -5,6 +5,10 @@ inputs:
         description: "DB name"
         required: false
         default: "VectorDB"
+    Root-Dir-Path:
+      description: "the path of IGinX root directory"
+      required: false
+      default: "${GITHUB_WORKSPACE}"
 
 runs:
     using: "composite" # Mandatory parameter
@@ -19,4 +23,5 @@ runs:
               stop: false
               clean: false
               start: true
-              ports: 19530 19531 19532
+              ports: 19530
+              Root-Dir-Path: ${{ inputs.Root-Dir-Path }}
