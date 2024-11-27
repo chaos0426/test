@@ -39,18 +39,14 @@ jobs:
 
       - name: Run Nginx in Docker
         run: |
-          # 拉取官方 Nginx 镜像
           docker pull nginx:latest
           
-          # 运行 Nginx 容器
           docker run -d -p 8181:80 --name my-nginx nginx:latest
 
       - name: Check Nginx is running
         run: |
-          # 等待几秒钟以确保 Nginx 完全启动
           sleep 5
           
-          # 检查 Nginx 是否正在运行
           if docker ps | grep -q "my-nginx"; then
             echo "Nginx is running."
           else
@@ -60,23 +56,19 @@ jobs:
 
       - name: Verify Nginx response
         run: |
-          # 使用 curl 检查 Nginx 是否响应
           if curl -s http://localhost:8181 | grep -q "Welcome to nginx!"; then
             echo "Nginx is responding correctly."
           else
             echo "Nginx is not responding correctly."
           fi
-
       - name: Network test
         shell: bash
         run: |
           docker ps
-          echo "netstat -an"
-#          netstat -an | grep 8181
-#          netstat -an | grep 1953
-          lsof -i :8181
-          lsof -i :1953
-          netstat -an
+          
+          lsof -i:8181 || echo "No process using port 8181"  
+          lsof -i:1953 || echo "No process using port 1953"  
+          
           docker ps -a
 
       - name: Set output
