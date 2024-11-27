@@ -24,7 +24,7 @@ runs:
           run: |
               VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
               echo "version=$VERSION" >> $GITHUB_OUTPUT
-              echo "::set-output name=version::$VERSION"  
+              echo "version = $VERSION"  
 
         - name: "absolute workspace path"
           id: workspace
@@ -38,4 +38,4 @@ runs:
                 ABSOLUTE_WORKSPACE=$(pwd)
               fi
               echo "workspace=$ABSOLUTE_WORKSPACE" >> $GITHUB_OUTPUT
-              echo "::set-output name=workspace::$ABSOLUTE_WORKSPACE"
+              echo "workspace = $ABSOLUTE_WORKSPACE"

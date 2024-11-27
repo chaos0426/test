@@ -10,11 +10,13 @@ jobs:
       fail-fast: false
       matrix:
 #        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-        os: ["macos-latest"]
+        os: ["ubuntu-latest", "macos-latest"]
     runs-on: ${{ matrix.os }}
 
     outputs:
       host: ${{ steps.db_info.outputs.host }}
+
+
 
     steps:
       - name: Checkout repository
@@ -37,48 +39,6 @@ jobs:
         with:
           DB-name: "VectorDB"
 
-      - name: Run Nginx in Docker
-        run: |
-          # 拉取官方 Nginx 镜像
-          docker pull nginx:latest
-          
-          # 运行 Nginx 容器
-          docker run -d -p 8181:80 --name my-nginx nginx:latest
-
-      - name: Check Nginx is running
-        run: |
-          # 等待几秒钟以确保 Nginx 完全启动
-          sleep 5
-          
-          # 检查 Nginx 是否正在运行
-          if docker ps | grep -q "my-nginx"; then
-            echo "Nginx is running."
-          else
-            echo "Nginx is not running."
-            exit 1
-          fi
-
-      - name: Verify Nginx response
-        run: |
-          # 使用 curl 检查 Nginx 是否响应
-          if curl -s http://localhost:8181 | grep -q "Welcome to nginx!"; then
-            echo "Nginx is responding correctly."
-          else
-            echo "Nginx is not responding correctly."
-          fi
-
-      - name: Network test
-        shell: bash
-        run: |
-          docker ps
-          echo "netstat -an"
-#          netstat -an | grep 8181
-#          netstat -an | grep 1953
-          lsof -i :8181
-          lsof -i :1953
-          netstat -an
-          docker ps -a
-
       - name: Set output
         id: db_info
         run: |
@@ -99,21 +59,6 @@ jobs:
         shell: bash
         run: |
           mvn clean package
-
-#  job2:
-#    runs-on: windows-latest
-#    needs: Run_Milvus  # 确保 job1 完成后再运行 job2
-#    env:
-#      host: ${{ needs.Run_Milvus.outputs.host }}
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Access the service
-#        run: |
-#          Invoke-WebRequest -Uri http://${{ env.host }}:8080
-#          Write-Host "Service is accessible from job2!"
 
 #  Java-Test:
 #    needs: Run_Milvus
@@ -139,10 +84,7 @@ jobs:
 #          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest.java
 #          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest1.java
 #          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest2.java
-
-
-
-
+#
 #      - if : runner.os == 'macOS'
 #        name: Environment dependence
 #        uses: ./.github/actions/dependence

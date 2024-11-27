@@ -33,7 +33,7 @@ public class MilvusTest2 {
     public MilvusClientV2 createClient() {
         MilvusClientV2 client = null;
         int i=0;
-
+        System.out.println("uri : "+uri);
         while (client ==null && i++<30) {
             if (i>1){
                 try {
