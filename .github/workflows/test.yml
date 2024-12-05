@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
 #        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-        os: ["macos-latest"]
+        os: ["windows-latest"]
     runs-on: ${{ matrix.os }}
 
     outputs:
@@ -32,59 +32,79 @@ jobs:
         with:
           java: "8"
 
+#      - name: Run DB
+#        uses: ./.github/actions/dbRunner
+#        with:
+#          DB-name: "VectorDB"
+      - name: pwd
+        shell: bash
+        run: |
+          pwd
+          ls
+
+#          /d/a/test/test
+
+      - if : runner.os == 'Windows'
+        uses: vedantmgoyal9/setup-wsl2@main
+
+      - if : runner.os == 'Windows'
+        run: apt update && apt upgrade -y
+        shell: wsl-run {0}
+
+      - if : runner.os == 'Windows'
+        name: Set JAVA_HOME
+        shell: wsl-run {0}
+        run: |
+          sudo apt update
+          sudo apt install openjdk-8-jdk -y
+          echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> $HOME/.bashrc
+          echo "export PATH=\$PATH:\$JAVA_HOME/bin" >> $HOME/.bashrc
+          source $HOME/.bashrc
+          java -version
+          echo $JAVA_HOME
+
+      - if: runner.os == 'Windows'
+        name: java version
+        shell: bash
+        run: |
+          pwd
+          java -version
+          echo $JAVA_HOME
+          ipconfig
+
+      - if: runner.os == 'Windows'
+        name: wsl java version
+        shell: wsl-run {0}
+        run: |
+          pwd
+          echo $JAVA_HOME
+          java -version
+          ifconfig
+
       - name: Run DB
         uses: ./.github/actions/dbRunner
         with:
           DB-name: "VectorDB"
 
-      - name: Run Nginx in Docker
-        run: |
-          # 拉取官方 Nginx 镜像
-          docker pull nginx:latest
-          
-          # 运行 Nginx 容器
-          docker run -d -p 8181:80 --name my-nginx nginx:latest
 
-      - name: Check Nginx is running
-        run: |
-          # 等待几秒钟以确保 Nginx 完全启动
-          sleep 5
-          
-          # 检查 Nginx 是否正在运行
-          if docker ps | grep -q "my-nginx"; then
-            echo "Nginx is running."
-          else
-            echo "Nginx is not running."
-            exit 1
-          fi
-
-      - name: Verify Nginx response
-        run: |
-          # 使用 curl 检查 Nginx 是否响应
-          if curl -s http://localhost:8181 | grep -q "Welcome to nginx!"; then
-            echo "Nginx is responding correctly."
-          else
-            echo "Nginx is not responding correctly."
-          fi
-
-      - name: Network test
+      - if : runner.os != 'Windows'
+        name: Network test
         shell: bash
         run: |
           docker ps
-          echo "netstat -an"
-#          netstat -an | grep 8181
-#          netstat -an | grep 1953
-          lsof -i :8181
-          lsof -i :1953
-          netstat -an
+               
+          for port in 19530 19531 19532; do
+            if netstat -an | grep -q ".*:$port.*LISTEN"; then
+              echo "Port $port is open."
+            else
+              echo "Port $port is not open."
+            fi
+          done
+          
           docker ps -a
 
-      - name: Set output
-        id: db_info
-        run: |
-          echo "host=$(hostname -I | awk '{print $1}')" >> $GITHUB_OUTPUT
-
-      - name: network test
+      - if : runner.os == 'Windows'
+        name: Network test on Windows
         shell: bash
         run: |
           for port in 19530 19531 19532; do
@@ -95,116 +115,31 @@ jobs:
             fi
           done
 
-      - name: Run tests
+      - if : runner.os == 'macOS'
+        name: replace host
         shell: bash
         run: |
-          mvn clean package
+          docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' milvus19530-standalone
+          ifconfig en0 | grep "inet " | awk '{print $2}'
+          ls
+          echo "========================"
+          MILVUS_HOST=$(ifconfig en0 | grep "inet " | awk '{print $2}')
+          MILVUS_HOST="192.168.106.2"
+          echo "MILVUS_HOST=${MILVUS_HOST}"
+          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest.java
+          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest1.java
+          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest2.java
+          ifconfig
 
-#  job2:
-#    runs-on: windows-latest
-#    needs: Run_Milvus  # 确保 job1 完成后再运行 job2
-#    env:
-#      host: ${{ needs.Run_Milvus.outputs.host }}
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Access the service
-#        run: |
-#          Invoke-WebRequest -Uri http://${{ env.host }}:8080
-#          Write-Host "Service is accessible from job2!"
-
-#  Java-Test:
-#    needs: Run_Milvus
-#    strategy:
-#      matrix:
-#        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-#
-#    runs-on: ${{ matrix.os }}
-#    env:
-#      host: ${{ needs.Run_Milvus.outputs.host }}
-#
-#    steps:
-#      - name: show env
-#        shell: bash
-#        run: |
-#          echo "${{ env.host }}"
-#
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: replace host
-#        run: |
-#          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest.java
-#          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest1.java
-#          sed -i"" -e "s/127.0.0.1/${{ env.host }}/g" src/main/java/org/example/MilvusTest2.java
-
-
-
-
-#      - if : runner.os == 'macOS'
-#        name: Environment dependence
-#        uses: ./.github/actions/dependence
-#        with:
-#          java: "11"
-#
-#      - if : runner.os != 'macOS'
-#        name: Environment dependence
-#        uses: ./.github/actions/dependence
-#        with:
-#          java: "8"
-#
-#      - name: network test
-#        shell: bash
-#        run: |
-#          for port in 19530 19531 19532; do
-#            if ss -tuln | grep -q ":$port "; then
-#              echo "Port $port is open."
-#            else
-#              echo "Port $port is not open."
-#            fi
-#          done
-#
 #      - name: Run tests
 #        shell: bash
 #        run: |
 #          mvn clean package
+#          mvn test
 
 
-
-#      - if: runner.os == 'Windows'
-#        name: Verify Docker installation on Windows
-#        shell: pwsh
-#        run: |
-#          $env:Path += ";${{ github.workspace }}"
-#          docker --version
-#          docker-compose --version
-#
-#      - if: runner.os != 'Windows'
-#        name: Verify Docker installation
-#        shell: bash
-#        run: |
-#          docker --version
-#          docker-compose --version
-#
-#      - name: Run Milvus DB
-#        uses: ./.github/workflows/actions/service/milvus
-#        with:
-#          stop: false
-#          clean: false
-#          start: true
-#          ports: 19530 19531 19532
-#
-#
-#      - name: Run tests
-#        shell: bash
-#        run: |
-#          docker ps -a
-#          if ss -tuln | grep -q ":19530 "; then
-#            echo "Port 19530 is open."
-#          else
-#            echo "Port 19530 is not open."
-#          fi
-#          mvn test  # 运行测试
-
+      - name: Run tests1
+        shell: bash
+        run: |
+          chmod +x "${GITHUB_WORKSPACE}/.github/scripts/test/test_union.sh"
+          mvn test -q -Dtest=Controller -DfailIfNoTests=false -P-format

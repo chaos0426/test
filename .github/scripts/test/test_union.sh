@@ -1,0 +1,5 @@
+pwd
+
+echo "======"
+
+java -version
