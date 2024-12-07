@@ -47,8 +47,10 @@ public class MilvusTest {
                     throw new RuntimeException(e);
                 }
             }
+            long l=System.currentTimeMillis();
             MilvusClientV2Pool pool = MilvusClientPool.createPool(uri, username, password,MilvusClientPool.getPoolConfig(new HashMap<>()));
             client = pool.getClient("default");
+            System.out.println("get client : "+(System.currentTimeMillis()-l));
         }
         if (client == null) {
             throw new RuntimeException("Unable to create client");
