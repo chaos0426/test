@@ -40,15 +40,26 @@ runs:
           shell: bash
           run: |
               brew update
-              brew install docker qemu
+              brew install docker
               brew install colima
-              LIMACTL_PATH=$(brew --prefix)/bin/limactl
-              sudo curl -L -o $LIMACTL_PATH https://github.com/mikekazakov/lima-nohvf/raw/master/limactl && sudo chmod +x $LIMACTL_PATH
-              colima start --network-address --arch arm64 --vm-type=qemu
+              colima start --network-address
               docker --version
               colima status
-#              colima status| grep "address:"|awk '{print $4}'|tr -d '"'
 
+#        - if: runner.os == 'macOS' &&  inputs.docker-required=='true'
+#          name: Install Docker on MacOS
+#          shell: bash
+#          run: |
+#            brew update
+#            brew install docker qemu
+#            brew install colima
+#            LIMACTL_PATH=$(brew --prefix)/bin/limactl
+#            sudo curl -L -o $LIMACTL_PATH https://github.com/mikekazakov/lima-nohvf/raw/master/limactl && sudo chmod +x $LIMACTL_PATH
+#            colima start --network-address --arch arm64 --vm-type=qemu
+#            docker --version
+#            colima status
+#            brew install docker-compose
+#            docker-compose --version
 
         - name: Set up JDK ${{ inputs.java }}
           uses: actions/setup-java@v4
