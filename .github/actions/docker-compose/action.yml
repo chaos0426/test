@@ -12,6 +12,7 @@ runs:
               docker --version
               brew install docker-compose
               docker-compose --version
+              docker ps
 
 #        - if: runner.os == 'Windows'
 #          name: Install Docker Compose on Windows

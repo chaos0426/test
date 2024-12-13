@@ -94,23 +94,23 @@ runs:
           working-directory: ${{ github.workspace }}
           run: |
             docker ps
-            for port in 19530 19531 19532; do
+            for port in ${{ inputs.ports }}; do
               if netstat -an | grep -q ".*:$port.*LISTEN"; then
                 echo "Port $port is open."
               else
                 echo "Port $port is not open."
               fi
             done
-            docker logs milvus19530-standalone
-            docker logs milvus19530-minio
-            docker logs milvus19530-etcd
+#            docker logs milvus19530-standalone
+#            docker logs milvus19530-minio
+#            docker logs milvus19530-etcd
             
         - if: fromJSON(inputs.start) && runner.os == 'Windows'
           name: show logs
           shell: bash
           working-directory: ${{ github.workspace }}
           run: |
-            for port in 19530 19531 19532; do
+            for port in ${{ inputs.ports }}; do
               if netstat -an | grep -q ".*:$port.*LISTEN"; then
                 echo "Port $port is open."
               else

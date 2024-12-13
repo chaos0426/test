@@ -23,5 +23,5 @@ runs:
               stop: false
               clean: false
               start: true
-              ports: 19530 19531 19532
+              ports: 19530
               Root-Dir-Path: ${{ inputs.Root-Dir-Path }}
