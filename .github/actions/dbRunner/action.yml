@@ -37,4 +37,4 @@ runs:
             stop: false
             clean: false
             start: true
-            ports: 7687
+            ports: 7687 7688 7689
