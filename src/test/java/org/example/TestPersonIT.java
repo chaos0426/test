@@ -98,7 +98,7 @@ class TestPersonIT {
     @Test
     @Order(6)
     public void delete() {
-        session.run("CALL apoc.graph.clear()").consume();
+        session.run("CALL apoc.periodic.iterate(\"MATCH (n) RETURN n\", \"DETACH DELETE n\",  {batchSize: 5000})").consume();
     }
 
     @Test
