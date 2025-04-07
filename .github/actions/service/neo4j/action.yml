@@ -41,6 +41,7 @@ runs:
             echo "dbms.security.procedures.unrestricted=apoc.*" >> $instance_dir/conf/neo4j.conf
             echo "dbms.security.procedures.allowlist=apoc.*" >> $instance_dir/conf/neo4j.conf
             
+            echo "Writing to $instance_dir/conf/apoc.conf"
             cat <<EOF > $instance_dir/conf/apoc.conf
             apoc.import.file.enabled=true
             apoc.export.file.enabled=true
@@ -82,6 +83,7 @@ runs:
             echo "dbms.security.procedures.unrestricted=apoc.*" >> $instance_dir/conf/neo4j.conf
             echo "dbms.security.procedures.allowlist=apoc.*" >> $instance_dir/conf/neo4j.conf
           
+            echo "Writing to $instance_dir/conf/apoc.conf"
             cat <<EOF > $instance_dir/conf/apoc.conf
             apoc.import.file.enabled=true
             apoc.export.file.enabled=true
