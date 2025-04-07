@@ -82,6 +82,20 @@ class TestPersonIT {
 //    }
 
     @Test
+    @Order(4)
+    public void check() {
+        String readAllPersonsQuery = "RETURN apoc.version() as vvv;";
+        session.readTransaction(tx -> {
+            Result result = tx.run(readAllPersonsQuery);
+            result.forEachRemaining(record -> {
+                System.out.println(String.format("check: %s", record.get("vvv").asString()));
+            });
+            System.out.println("check:"+result.list().size());
+            return null;
+        });
+    }
+
+    @Test
     @Order(6)
     public void delete() {
         session.run("CALL apoc.graph.clear()").consume();
