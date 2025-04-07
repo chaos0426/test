@@ -68,17 +68,39 @@ class TestPersonIT {
             result.forEachRemaining(record -> {
                 System.out.println(String.format("Found person: %s", record.get("name").asString()));
             });
+            System.out.println("findAllPersons:"+result.list().size());
             return null;
         });
     }
 
 
+//    @Test
+//    @Order(4)
+//    public void deletePerson() {
+//        String name = "Jack";
+//        session.run("MATCH (n:Person {name: $name}) DETACH DELETE n", parameters("name", name));
+//    }
+
     @Test
-    @Order(4)
-    public void deletePerson() {
-        String name = "Jack";
-        session.run("MATCH (n:Person {name: $name}) DETACH DELETE n", parameters("name", name));
+    @Order(6)
+    public void delete() {
+        session.run("CALL apoc.graph.clear()").consume();
     }
+
+    @Test
+    @Order(7)
+    public void findAllPersons1() {
+        String readAllPersonsQuery = "MATCH (p:Person) " + "RETURN p.name AS name";
+        session.readTransaction(tx -> {
+            Result result = tx.run(readAllPersonsQuery);
+            result.forEachRemaining(record -> {
+                System.out.println(String.format("Found person: %s", record.get("name").asString()));
+            });
+            System.out.println("findAllPersons1:"+result.list().size());
+            return null;
+        });
+    }
+
 
     @Test
     @Order(5)
