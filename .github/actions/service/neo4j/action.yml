@@ -48,6 +48,8 @@ runs:
           
             nohup $instance_dir/bin/neo4j console > neo4j1.log 2>&1 &
             sleep 10
+            
+            cat $instance_dir/logs/neo4j.log
           done
           
       - if: fromJSON(inputs.start) && runner.os == 'Windows'
@@ -78,4 +80,5 @@ runs:
             powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
             
             sleep 10
+            cat $instance_dir/logs/neo4j.log
           done
