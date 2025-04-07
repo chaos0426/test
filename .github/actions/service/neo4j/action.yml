@@ -41,6 +41,12 @@ runs:
             echo "dbms.security.procedures.unrestricted=apoc.*" >> $instance_dir/conf/neo4j.conf
             echo "dbms.security.procedures.allowlist=apoc.*" >> $instance_dir/conf/neo4j.conf
             
+            cat <<EOF > $instance_dir/conf/apoc.conf
+            apoc.import.file.enabled=true
+            apoc.export.file.enabled=true
+            apoc.import.file.use_neo4j_config=true
+            EOF
+            
             chmod +x $instance_dir/bin/neo4j
             chmod +x $instance_dir/bin/neo4j-admin
             
@@ -75,6 +81,12 @@ runs:
             sed -i"" -e "s/#server.bolt.listen_address=:7687/server.bolt.listen_address=:$port/g" $instance_dir/conf/neo4j.conf
             echo "dbms.security.procedures.unrestricted=apoc.*" >> $instance_dir/conf/neo4j.conf
             echo "dbms.security.procedures.allowlist=apoc.*" >> $instance_dir/conf/neo4j.conf
+          
+            cat <<EOF > $instance_dir/conf/apoc.conf
+            apoc.import.file.enabled=true
+            apoc.export.file.enabled=true
+            apoc.import.file.use_neo4j_config=true
+            EOF
           
             powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j-admin.bat -ArgumentList dbms,set-initial-password,neo4jtest -NoNewWindow -Wait"
             powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
