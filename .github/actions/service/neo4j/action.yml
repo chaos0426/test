@@ -34,7 +34,9 @@ runs:
             tar -xzf neo4j.tar.gz --strip-components=1 -C $instance_dir
           
             mkdir -p $instance_dir/plugins/
-            cp apoc.jar $instance_dir/plugins/apoc-5.26.0-extended.jar
+            cp apoc.jar $instance_dir/plugins/
+            echo "ls $instance_dir/plugins/"
+            ls $instance_dir/plugins/
             
             sed -i"" -e "s/#server.http.listen_address=:7474/server.http.listen_address=:1$port/g" $instance_dir/conf/neo4j.conf
             sed -i"" -e "s/#server.bolt.listen_address=:7687/server.bolt.listen_address=:$port/g" $instance_dir/conf/neo4j.conf
@@ -74,7 +76,7 @@ runs:
             dir $instance_dir
           
             mkdir -p $instance_dir/plugins/
-            cp apoc.jar $instance_dir/plugins/apoc-5.26.0-extended.jar
+            cp apoc.jar $instance_dir/plugins/
             
             sed -i"" -e "s/#server.http.listen_address=:7474/server.http.listen_address=:1$port/g" $instance_dir/conf/neo4j.conf
             sed -i"" -e "s/#server.bolt.listen_address=:7687/server.bolt.listen_address=:$port/g" $instance_dir/conf/neo4j.conf
