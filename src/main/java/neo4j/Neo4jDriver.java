@@ -13,7 +13,7 @@ public class Neo4jDriver {
 
     private final Driver driver;
     private final String host= "127.0.0.1";
-    private final int port= 7687;
+    private final int port= 7688;
     private final String user = "neo4j";
     private final String password = "neo4jtest";
 

@@ -91,6 +91,7 @@ class TestPersonIT {
         records.forEach(record -> {
             System.out.println(String.format("Get : %s", record.get("propertyName")));
             System.out.println(String.format("type : %s", record.get("propertyType")));
+            System.out.println(record);
         });
 
 
