@@ -9,6 +9,7 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.neo4j.driver.SessionConfig.builder;
@@ -41,36 +42,58 @@ class TestPersonIT {
     @Order(1)
     public void addPerson() {
         String name = "Jack";
-        session.run("CREATE (a:Person {name: $name})", parameters("name", name));
+        session.run("CREATE (a:Person {name: $name, age: $age, toFloat($a): $a, b: $b})",
+                parameters("name", name,"age",1,"a",3.12,"b",10.123));
     }
 
 
     @Test
     @Order(2)
     public void findPerson() {
-        String personName = "Jack";
-        String readPersonByNameQuery = "MATCH (p:Person) " + "WHERE p.name = $person_name " + "RETURN p.name AS name";
-        Map<String, Object> params = Collections.singletonMap("person_name", personName);
-        Record record = session.readTransaction(tx -> {
-            Result result = tx.run(readPersonByNameQuery, params);
-            return result.single();
+        String query =
+                "CALL db.schema.nodeTypeProperties() "
+                        + "YIELD nodeType, propertyName, propertyTypes "
+                        + "RETURN DISTINCT nodeType as labelName, propertyName AS propertyName, propertyTypes AS propertyType";
+        List<Record> records =
+                session.readTransaction(
+                        tx -> {
+                            Result result =
+                                    tx.run(query);
+                            return result.list();
+                        });
+        records.forEach(record -> {
+            System.out.println(String.format("Found : %s", record.get("propertyName")));
+            System.out.println(String.format("type : %s", record.get("propertyType")));
         });
-        System.out.println(
-                String.format("Found person: %s", record.get("name").asString()));
+
     }
 
     @Test
     @Order(3)
     public void findAllPersons() {
-        String readAllPersonsQuery = "MATCH (p:Person) " + "RETURN p.name AS name";
-        session.readTransaction(tx -> {
-            Result result = tx.run(readAllPersonsQuery);
-            result.forEachRemaining(record -> {
-                System.out.println(String.format("Found person: %s", record.get("name").asString()));
-            });
-            System.out.println("findAllPersons:"+result.list().size());
-            return null;
+        String query = "MATCH (p:Person) RETURN " +
+                "apoc.meta.cypher.type(p.name) AS nameType, " +
+                "apoc.meta.cypher.type(p.age) AS ageType, " +
+                "apoc.meta.cypher.type(p.a) AS aType, " +
+                "apoc.meta.cypher.type(p.b) AS bType, " +
+                "apoc.convert.getClass(p.name) AS nameType1 "+
+                "apoc.convert.getClass(p.age) AS ageType1 "+
+                "apoc.convert.getClass(p.a) AS aType1 "+
+                "apoc.convert.getClass(p.b) AS bType1 ";
+
+        List<Record> records =
+                session.readTransaction(
+                        tx -> {
+                            Result result =
+                                    tx.run(query);
+                            return result.list();
+                        });
+        records.forEach(record -> {
+            System.out.println(String.format("Get : %s", record.get("propertyName")));
+            System.out.println(String.format("type : %s", record.get("propertyType")));
         });
+
+
     }
 
 
