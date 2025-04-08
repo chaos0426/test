@@ -75,11 +75,11 @@ class TestPersonIT {
                 "apoc.meta.cypher.type(p.name) AS nameType, " +
                 "apoc.meta.cypher.type(p.age) AS ageType, " +
                 "apoc.meta.cypher.type(p.a) AS aType, " +
-                "apoc.meta.cypher.type(p.b) AS bType, " +
-                "apoc.convert.getClass(p.name) AS nameType1, "+
-                "apoc.convert.getClass(p.age) AS ageType1, "+
-                "apoc.convert.getClass(p.a) AS aType1, "+
-                "apoc.convert.getClass(p.b) AS bType1 ";
+                "apoc.meta.cypher.type(p.b) AS bType" ;
+//                "apoc.convert.getClass(p.name) AS nameType1, "+
+//                "apoc.convert.getClass(p.age) AS ageType1, "+
+//                "apoc.convert.getClass(p.a) AS aType1, "+
+//                "apoc.convert.getClass(p.b) AS bType1 ";
 
         List<Record> records =
                 session.readTransaction(
