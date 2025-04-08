@@ -42,7 +42,7 @@ class TestPersonIT {
     @Order(1)
     public void addPerson() {
         String name = "Jack";
-        session.run("CREATE (a:Person {name: $name, age: $age, a:toFloat($a), b: $b})",
+        session.run("CREATE (a:Person {name: $name, age: $age, a:toFloat($a), b: toDouble($b)})",
                 parameters("name", name,"age",1,"a",3.12,"b",10.123));
     }
 
