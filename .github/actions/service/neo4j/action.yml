@@ -94,6 +94,7 @@ runs:
             cat $instance_dir/logs/neo4j.log
           done
           
+          echo "check ports======================================="
           for port in 7687 7688 7689; do
             if [[ "$RUNNER_OS" == "Windows" ]]; then
               if ! netstat -ano | findstr $port; then
@@ -108,7 +109,8 @@ runs:
 
           powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList stop -WindowStyle Hidden"
           sleep 10
-
+          
+          echo "check ports=======================================1"
           for port in 7687 7688 7689; do
             if [[ "$RUNNER_OS" == "Windows" ]]; then
               if ! netstat -ano | findstr $port; then
