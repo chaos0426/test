@@ -93,3 +93,30 @@ runs:
             sleep 10
             cat $instance_dir/logs/neo4j.log
           done
+          
+          for port in 7687 7688 7689; do
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              if ! netstat -ano | findstr $port; then
+                echo "Port $port is not in use"
+              fi
+            else
+              if ! lsof -i :$port && ! netstat -tuln | grep $port; then
+                echo "Port $port is not in use"
+              fi
+            fi
+          done
+
+          powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList stop -WindowStyle Hidden"
+          sleep 10
+
+          for port in 7687 7688 7689; do
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              if ! netstat -ano | findstr $port; then
+                echo "Port $port is not in use"
+              fi
+            else
+              if ! lsof -i :$port && ! netstat -tuln | grep $port; then
+                echo "Port $port is not in use"
+              fi
+            fi
+          done

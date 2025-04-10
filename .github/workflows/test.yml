@@ -49,7 +49,7 @@ jobs:
         name: Network test
         shell: bash
         run: |
-          for port in 7687; do
+          for port in 7687 7688 7689; do
             if netstat -an | grep -q ".*:$port.*LISTEN"; then
               echo "Port $port is open."
             else
