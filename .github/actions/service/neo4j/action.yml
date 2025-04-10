@@ -88,7 +88,8 @@ runs:
             echo "apoc.import.file.use_neo4j_config=true" >> $instance_dir/conf/apoc.conf
           
             powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j-admin.bat -ArgumentList dbms,set-initial-password,neo4jtest -NoNewWindow -Wait"
-            powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
+            #powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -WindowStyle Hidden"
+            powershell -Command "Start-Process -FilePath $instance_dir/bin/neo4j.bat -ArgumentList console -NoNewWindow"
             #$instance_dir/bin/neo4j.bat start 
             
             sleep 10
