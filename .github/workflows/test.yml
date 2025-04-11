@@ -38,7 +38,7 @@ jobs:
         name: Environment dependence
         uses: ./.github/actions/dependence
         with:
-          java: "17"
+          java: "8"
 
       - name: Run DB
         uses: ./.github/actions/dbRunner
