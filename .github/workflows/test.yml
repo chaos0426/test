@@ -20,19 +20,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # 检出代码
 
-      - name: show runner info
-        shell: bash
-        run: |
-          pwd
-          whoami
-          uname -m
-          uname -a
-
       - if : runner.os == 'macOS'
         name: Environment dependence
         uses: ./.github/actions/dependence
         with:
-          java: "17"
+          java: "8"
 
       - if : runner.os != 'macOS'
         name: Environment dependence
@@ -40,10 +32,28 @@ jobs:
         with:
           java: "8"
 
+      - name: show runner info
+        shell: bash
+        run: |
+          pwd
+          whoami
+          uname -m
+          uname -a
+          java -version
+
       - name: Run DB
         uses: ./.github/actions/dbRunner
         with:
           DB-name: "Neo4j"
+
+      - name: show runner info1
+        shell: bash
+        run: |
+          pwd
+          whoami
+          uname -m
+          uname -a
+          java -version
 
       - if : runner.os != 'Windows'
         name: Network test
