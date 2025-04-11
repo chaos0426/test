@@ -21,8 +21,6 @@ import io.milvus.pool.MilvusClientV2Pool;
 import io.milvus.pool.PoolConfig;
 import io.milvus.v2.client.ConnectConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Map;
@@ -31,8 +29,6 @@ import java.util.Map;
 /** MilvusClientPool 提供了一个静态方法来创建和管理 Milvus 客户端池。 这个类主要用于优化对 Milvus 服务的连接管理，通过池化技术减少频繁创建和销毁连接的开销。 */
 public class MilvusClientPool {
 
-  /** 日志记录器，用于记录日志信息。 */
-  private static final Logger LOGGER = LoggerFactory.getLogger(MilvusClientPool.class);
 
   /**
    * 创建一个 Milvus 客户端池。
@@ -86,7 +82,8 @@ public class MilvusClientPool {
       return pool;
     } catch (ReflectiveOperationException e) {
       // 记录错误日志
-      LOGGER.error("MilvusClientV2Pool create error", e);
+      System.out.println("MilvusClientV2Pool create error");
+      e.printStackTrace();
       return null;
     }
   }

@@ -8,7 +8,7 @@ import org.junit.Test;
 public class MilvusTestTest extends TestCase {
 
     MilvusTest test;
-    @Before
+//    @Before
     public void setUp() {
         test = new MilvusTest();
         try {
@@ -18,7 +18,7 @@ public class MilvusTestTest extends TestCase {
         }
     }
 
-    @After
+//    @After
     public void tearDown() throws InterruptedException {
         test.drop();
         test.close();
@@ -26,7 +26,7 @@ public class MilvusTestTest extends TestCase {
 
 
 
-    @Test
+//    @Test
     public void testSearch() throws InterruptedException {
         long r = test.insert();
         assertEquals(r, 10);

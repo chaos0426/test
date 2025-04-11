@@ -23,5 +23,18 @@ runs:
               stop: false
               clean: false
               start: true
-              ports: 19530 19531 19532
+              ports: 19530
               Root-Dir-Path: ${{ inputs.Root-Dir-Path }}
+
+        - if: inputs.DB-name=='Neo4j'
+          name: Setup Neo4j DB
+          uses: ./.github/actions/setup/neo4j
+
+        - if: inputs.DB-name=='Neo4j'
+          name: Run Neo4j DB
+          uses: ./.github/actions/service/neo4j
+          with:
+            stop: false
+            clean: false
+            start: true
+            ports: 7687 7688 7689

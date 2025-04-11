@@ -9,8 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-#        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-        os: ["windows-latest"]
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+#        os: ["macos-latest"]
     runs-on: ${{ matrix.os }}
 
     outputs:
@@ -20,94 +20,53 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # 检出代码
 
-      - if : runner.os == 'macOS'
-        name: Environment dependence
-        uses: ./.github/actions/dependence
-        with:
-          java: "11"
-
-      - if : runner.os != 'macOS'
-        name: Environment dependence
-        uses: ./.github/actions/dependence
-        with:
-          java: "8"
-
-#      - name: Run DB
-#        uses: ./.github/actions/dbRunner
+#      - if : runner.os == 'macOS'
+#        name: Environment dependence
+#        uses: ./.github/actions/dependence
 #        with:
-#          DB-name: "VectorDB"
-      - name: pwd
+#          java: "8"
+#
+#      - if : runner.os != 'macOS'
+#        name: Environment dependence
+#        uses: ./.github/actions/dependence
+#        with:
+#          java: "8"
+
+      - name: Set up JDK ${{ inputs.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: ${{ runner.os == 'macOS' && 'liberica' || 'temurin' }}
+          cache: "maven"
+
+      - name: show runner info
         shell: bash
         run: |
           pwd
-          ls
-
-#          /d/a/test/test
-
-      - if : runner.os == 'Windows'
-        uses: vedantmgoyal9/setup-wsl2@main
-
-      - if : runner.os == 'Windows'
-        run: apt update && apt upgrade -y
-        shell: wsl-run {0}
-
-      - if : runner.os == 'Windows'
-        name: Set JAVA_HOME
-        shell: wsl-run {0}
-        run: |
-          sudo apt update
-          sudo apt install openjdk-8-jdk -y
-          echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> $HOME/.bashrc
-          echo "export PATH=\$PATH:\$JAVA_HOME/bin" >> $HOME/.bashrc
-          source $HOME/.bashrc
+          whoami
+          uname -m
+          uname -a
           java -version
-          echo $JAVA_HOME
-
-      - if: runner.os == 'Windows'
-        name: java version
-        shell: bash
-        run: |
-          pwd
-          java -version
-          echo $JAVA_HOME
-          ipconfig
-
-      - if: runner.os == 'Windows'
-        name: wsl java version
-        shell: wsl-run {0}
-        run: |
-          pwd
-          echo $JAVA_HOME
-          java -version
-          ifconfig
 
       - name: Run DB
         uses: ./.github/actions/dbRunner
         with:
-          DB-name: "VectorDB"
+          DB-name: "Neo4j"
 
+      - name: show runner info1
+        shell: bash
+        run: |
+          pwd
+          whoami
+          uname -m
+          uname -a
+          java -version
 
       - if : runner.os != 'Windows'
         name: Network test
         shell: bash
         run: |
-          docker ps
-               
-          for port in 19530 19531 19532; do
-            if netstat -an | grep -q ".*:$port.*LISTEN"; then
-              echo "Port $port is open."
-            else
-              echo "Port $port is not open."
-            fi
-          done
-          
-          docker ps -a
-
-      - if : runner.os == 'Windows'
-        name: Network test on Windows
-        shell: bash
-        run: |
-          for port in 19530 19531 19532; do
+          for port in 7687 7688 7689; do
             if netstat -an | grep -q ".*:$port.*LISTEN"; then
               echo "Port $port is open."
             else
@@ -115,31 +74,8 @@ jobs:
             fi
           done
 
-      - if : runner.os == 'macOS'
-        name: replace host
+      - name: Run tests
         shell: bash
         run: |
-          docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' milvus19530-standalone
-          ifconfig en0 | grep "inet " | awk '{print $2}'
-          ls
-          echo "========================"
-          MILVUS_HOST=$(ifconfig en0 | grep "inet " | awk '{print $2}')
-          MILVUS_HOST="192.168.106.2"
-          echo "MILVUS_HOST=${MILVUS_HOST}"
-          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest.java
-          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest1.java
-          sed -i"" -e "s/127.0.0.1/192.168.106.2/g" src/main/java/org/example/MilvusTest2.java
-          ifconfig
-
-#      - name: Run tests
-#        shell: bash
-#        run: |
-#          mvn clean package
-#          mvn test
-
-
-      - name: Run tests1
-        shell: bash
-        run: |
-          chmod +x "${GITHUB_WORKSPACE}/.github/scripts/test/test_union.sh"
-          mvn test -q -Dtest=Controller -DfailIfNoTests=false -P-format
+          mvn clean package
+          mvn test
