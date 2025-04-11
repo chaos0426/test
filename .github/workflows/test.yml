@@ -20,17 +20,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # 检出代码
 
-      - if : runner.os == 'macOS'
-        name: Environment dependence
-        uses: ./.github/actions/dependence
-        with:
-          java: "8"
+#      - if : runner.os == 'macOS'
+#        name: Environment dependence
+#        uses: ./.github/actions/dependence
+#        with:
+#          java: "8"
+#
+#      - if : runner.os != 'macOS'
+#        name: Environment dependence
+#        uses: ./.github/actions/dependence
+#        with:
+#          java: "8"
 
-      - if : runner.os != 'macOS'
-        name: Environment dependence
-        uses: ./.github/actions/dependence
+      - name: Set up JDK ${{ inputs.java }}
+        uses: actions/setup-java@v4
         with:
-          java: "8"
+          java-version: 8
+          distribution: ${{ runner.os == 'macOS' && 'liberica' || 'temurin' }}
+          cache: "maven"
 
       - name: show runner info
         shell: bash
