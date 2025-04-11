@@ -79,4 +79,3 @@ jobs:
         run: |
           mvn clean package
           mvn test
-          docker ps
