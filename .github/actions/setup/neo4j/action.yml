@@ -30,8 +30,8 @@ runs:
         ls -a
         echo "=================jdk17"
         ls jdk17
-        echo "=================jdk17/bin"
-        ls jdk17/bin
+        echo "=================jdk17/Contents"
+        ls jdk17/Contents
       shell: bash
 
     - name: Download Neo4j (Windows)
