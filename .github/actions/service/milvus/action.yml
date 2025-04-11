@@ -44,7 +44,7 @@ runs:
         - if: fromJSON(inputs.start)
           name: Start milvus
           shell: bash
-          working-directory: ${{ github.action_path }}
+          working-directory: ${{ github.aliction_path }}
           run: |
               for port in ${{ inputs.ports }}; do
                 echo "Starting milvus on port $port"
