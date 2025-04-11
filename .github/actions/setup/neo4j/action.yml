@@ -46,3 +46,7 @@ runs:
         mv jdk17_temp/* jdk17
         pwd
         dir
+        echo "=================jdk17"
+        dir jdk17
+        echo "=================jdk17/bin"
+        dir jdk17/bin
