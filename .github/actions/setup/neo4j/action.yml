@@ -28,6 +28,10 @@ runs:
         tar -xzf jdk.tar.gz -C jdk17 --strip-components=1
         pwd
         ls -a
+        echo "=================jdk17"
+        ls jdk17
+        echo "=================jdk17/bin"
+        ls jdk17/bin
       shell: bash
 
     - name: Download Neo4j (Windows)
